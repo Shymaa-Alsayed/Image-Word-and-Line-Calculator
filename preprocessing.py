@@ -113,13 +113,11 @@ def calculate_spaces(line_img):
 
 def calculate_no_words_in_line(line_img):
     spaces=calculate_spaces(line_img)
-    alpha,loc,beta=stats.gamma.fit(spaces)
-    gamma_mean=(alpha/beta)
-    hist_=np.histogram(spaces)
-    cutoff_length=np.floor(len(hist_[1])*gamma_mean)
-    cutoff_value=hist_[1][int(cutoff_length)]
-    word_spaces=[ value for value in spaces if value>cutoff_value]
-    no_words=len(word_spaces)
+    loc,theta=stats.expon.fit(spaces)
+    expo_mean=np.ceil(theta)
+    print('expo mean',expo_mean)
+    word_spaces=[ value for value in spaces if value>expo_mean]
+    no_words=len(word_spaces)-1
     return  no_words,line_img
 
 
