@@ -106,8 +106,7 @@ def calculate_spaces(line_img):
                count+=1
            else:
                spaces.append(count)
-               count=0#
-    print(sorted(spaces))
+               count=0
     return spaces
 
 
@@ -157,7 +156,6 @@ class Root(Tk):
         self.filename = filedialog.askopenfilename(initialdir =  "/", title = "Select A File", filetype =
         (("jpeg files","*.jpg"),("all files","*.*")) )
         self.img_name=self.filename
-        print(self.img_name)
         self.label = ttk.Label(self.labelFrame, text = "")
         self.label.grid(column = 1, row = 2)
         self.label.configure(text = self.filename)
@@ -167,7 +165,7 @@ class Root(Tk):
         lines_coord = line_segmentation(img)
         total_no_of_lines = len(lines_coord)
         total_no_of_words = 0
-        print(lines_coord)
+        total_spaces=[]
         for line in lines_coord:
             line_img = crop_line(img, line)
             word_start_and_end = word_segmentation(line_img)
@@ -186,7 +184,6 @@ class Root(Tk):
         self.avg_label=ttk.Label( text = "")
         self.avg_label.place(x = 220, y = 195)
         self.avg_label.configure(text = avg_no_words_in_line)
-        #return total_no_of_lines, total_no_of_words, avg_no_words_in_line
 
 
 
