@@ -26,9 +26,8 @@ def crop_word(img,word_start_and_end):
     word_img=img[:,word_start_and_end[0]:word_start_and_end[1]]
     return word_img
 
-def word_segmentation(line_img):
-    no_words,line_img = calculate_no_words_in_line(line_img)
-    word_start_and_end=[]
+def word_segmentation(line_img,cutoff_value):
+    no_words,line_img = calculate_no_words_in_line(line_img,cutoff_value)
     for i in range(1,16,2):
         for j in range(1,16,2):
             word_start_and_end = projection_histogram(line_img, type='horizontal',dil=True,window=(i,j))
@@ -106,19 +105,13 @@ def calculate_spaces(line_img):
                count+=1
            else:
                spaces.append(count)
-               count=0#
-    print(sorted(spaces))
+               count=0
     return spaces
 
 
-def calculate_no_words_in_line(line_img):
+def calculate_no_words_in_line(line_img,cutoff_value):
     spaces=calculate_spaces(line_img)
-    alpha,loc,beta=stats.gamma.fit(spaces)
-    gamma_mean=(alpha/beta)
-    hist_=np.histogram(spaces)
-    cutoff_length=np.floor(len(hist_[1])*gamma_mean)
-    cutoff_value=hist_[1][int(cutoff_length)]
-    word_spaces=[ value for value in spaces if value>cutoff_value]
+    word_spaces=[ value for value in spaces if value>=cutoff_value]
     no_words=len(word_spaces)
     return  no_words,line_img
 
@@ -159,7 +152,6 @@ class Root(Tk):
         self.filename = filedialog.askopenfilename(initialdir =  "/", title = "Select A File", filetype =
         (("jpeg files","*.jpg"),("all files","*.*")) )
         self.img_name=self.filename
-        print(self.img_name)
         self.label = ttk.Label(self.labelFrame, text = "")
         self.label.grid(column = 1, row = 2)
         self.label.configure(text = self.filename)
@@ -169,11 +161,16 @@ class Root(Tk):
         lines_coord = line_segmentation(img)
         total_no_of_lines = len(lines_coord)
         total_no_of_words = 0
-        print(lines_coord)
+        total_spaces=[]
         for line in lines_coord:
             line_img = crop_line(img, line)
-            word_start_and_end = word_segmentation(line_img)
-            print(word_start_and_end)
+            spaces=calculate_spaces(line_img)
+            total_spaces.extend(spaces)
+        loc, theta = stats.expon.fit(total_spaces)
+        mean=np.ceil(theta)
+        for line in lines_coord:
+            line_img = crop_line(img, line)
+            word_start_and_end = word_segmentation(line_img,mean)
             total_no_of_words += len(word_start_and_end)
         avg_no_words_in_line = round(total_no_of_words / len(lines_coord),1)
 
@@ -188,7 +185,6 @@ class Root(Tk):
         self.avg_label=ttk.Label( text = "")
         self.avg_label.place(x = 220, y = 195)
         self.avg_label.configure(text = avg_no_words_in_line)
-        #return total_no_of_lines, total_no_of_words, avg_no_words_in_line
 
 
 
