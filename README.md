@@ -1,5 +1,5 @@
-# Image Word and Line Calculator
-Word and Line Calculator for any image format containing typed English text.
+# Image OCR Plus Word and Line Calculator
+OCR Tkinter App and Word for any image format containing typed English text on White background.
 ## Overview
 * A Tkinter GUI App for functioning as  Optical Character Recognition and a word and line calculator for images containing typed English text on a  white background  of any size or font. It displays Four things: Total Number of lines in image - Total number of words in image - Average number of words in a line - Typed text of the image content.
 ## Usage
